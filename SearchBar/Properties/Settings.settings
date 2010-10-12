@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SearchBar.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="selectedPrefecture" Type="System.String" Scope="User">
+      <Value Profile="(Default)">東京都</Value>
+    </Setting>
+    <Setting Name="selectedSystemId" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Tokyo_Pref</Value>
+    </Setting>
+    <Setting Name="selectedSystemName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">東京都立図書館</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
