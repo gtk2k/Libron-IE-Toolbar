@@ -10,3 +10,4 @@ C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\BandObjectLib\obj\Rel
 C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\BandObjectLib\obj\Release\GenerateResource-ResGen.read.1.tlog
 C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\BandObjectLib\obj\Release\GenerateResource-ResGen.write.1.tlog
 C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\BandObjectLib\obj\Release\BandObjectLib.dll
+C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\BandObjectLib\bin\Release\Interop.SHDocVw.dll

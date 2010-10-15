@@ -17,4 +17,15 @@
     <VerifyUploadedFiles>false</VerifyUploadedFiles>
     <ProjectView>ShowAllFiles</ProjectView>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files\Internet Explorer\iexplore.exe</StartProgram>
+    <StartURL>http://www.amazon.co.jp/</StartURL>
+    <StartArguments>http://www.amazon.co.jp/</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <StartAction>Program</StartAction>
+    <StartProgram>C:\Program Files\Internet Explorer\iexplore.exe</StartProgram>
+    <StartArguments>http://www.amazon.co.jp</StartArguments>
+  </PropertyGroup>
 </Project>

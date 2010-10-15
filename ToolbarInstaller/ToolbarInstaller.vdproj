@@ -374,7 +374,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Libron"
         "ProductCode" = "8:{9B96D766-3FC1-4F17-A47A-5E85BE16B315}"
-        "PackageCode" = "8:{B175A933-19C0-4286-940B-30E271879A46}"
+        "PackageCode" = "8:{EA4B4572-BB8E-435C-8D54-567C1560D085}"
         "UpgradeCode" = "8:{97512AD9-EF64-4E0C-BB54-03F2021F7224}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"

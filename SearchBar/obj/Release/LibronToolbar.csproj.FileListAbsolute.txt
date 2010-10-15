@@ -21,3 +21,4 @@ C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\SearchBar\obj\Release
 C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\SearchBar\obj\Release\GenerateResource-ResGen.read.4.tlog
 C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\SearchBar\obj\Release\GenerateResource-ResGen.write.1.tlog
 C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\SearchBar\obj\Release\LibronToolbar.dll
+C:\Documents and Settings\gtk2k\My Documents\LibronToolbar\SearchBar\bin\Release\Interop.SHDocVw.dll

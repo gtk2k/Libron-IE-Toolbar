@@ -110,7 +110,7 @@ namespace LibronToolbar
 {
     class LibronClass
     {
-        public string libronversion = "2.1.1";
+        public string libronversion = "2.1.2";
 
         // http://ja.wikipedia.org/wiki/都道府県 の並び順
         public string[] prefectures = new[] {"北海道",
@@ -520,7 +520,6 @@ namespace LibronToolbar
                 string href = document.location.href;
                 Regex reg = new Regex(@"/(dp|ASIN|product)/([\dX]{10})");
                 Match m = reg.Match(href);
-
                 string title;
                 if (m.Success && m.Groups.Count == 3)
                 {
@@ -531,7 +530,7 @@ namespace LibronToolbar
                     string url = "http://api.calil.jp/check?appkey=" + appkey + "&isbn=" + isbn + "&systemid=" + selectedSystemId + "&format=xml";
                     checkLibrary(url, (IHTMLDOMNode)div, isbn, title);
                 }
-                else if ((href.IndexOf("wishlist") != -1) || (href.IndexOf("/s?") != -1) || (href.IndexOf("/s/") != -1) || (href.IndexOf("/exec/") != -1) || (href.IndexOf("/gp/search") != -1))
+                else if ((href.IndexOf("wishlist") != -1) || (href.IndexOf("/s?") != -1) || (href.IndexOf("/s/") != -1) || (href.IndexOf("/exec/") != -1) || (href.IndexOf("/gp/search") != -1) || (href.IndexOf("/gp/bestsellers/") != -1))
                 {
                     IHTMLElementCollection objects = null;
                     if (href.IndexOf("wishlist") != -1)
@@ -549,7 +548,7 @@ namespace LibronToolbar
                         {
                             IHTMLElement obj = (IHTMLElement)objEnum.Current;
                             if (obj.className == null) continue;
-                            if (obj.className.IndexOf("productTitle") != -1)
+                            if (obj.className == "productTitle" || (obj.className == "title" && obj.parentElement.className == "data") || obj.className == "fixed-line")
                             {
                                 IHTMLDOMChildrenCollection childs = null;
                                 if (((IHTMLElement)obj).tagName.ToLower() == "span")
@@ -600,6 +599,7 @@ namespace LibronToolbar
             catch (Exception ex)
             {
                 AddErrorLog(ex);
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -638,6 +638,7 @@ namespace LibronToolbar
             {
                 WebClient wc = new WebClient();
                 wc.Encoding = Encoding.UTF8;
+                wc.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
                 wc.DownloadStringCompleted += (s, e) =>
                 {
                     XmlDocument xdoc = new XmlDocument();
@@ -668,78 +669,82 @@ namespace LibronToolbar
 
         void addLink(XmlDocument xdoc, IHTMLDOMNode div, string isbn, string title)
         {
-            removeLoadingIcon((IHTMLDOMNode)div);
-            XmlNode apibookstatus = xdoc.SelectSingleNode("result/books/book[@isbn='" + isbn + "']/system[@systemid='" + selectedSystemId + "']/status");
-            XmlNode libkeys = null;
-            List<string> calil_library_links = new List<string>();
-            HTMLDivElement linkDivOuter = (HTMLDivElement)document.createElement("div");
-            HTMLDivElement linkDiv = (HTMLDivElement)document.createElement("div");
-            linkDiv.className = "libron_link_div";
-            linkDiv.style.cssText = "padding:7px;border:1px solid #cbc6bd;background:#e8e4db;-moz-border-radius:5px;-webkit-border-radius:5px;font-size:12px;";
-            string tweet_body = null;
-            string twitter_link_inner = null;
-            string libreq_link = "";
+            try
+            {
+                removeLoadingIcon((IHTMLDOMNode)div);
+                XmlNode apibookstatus = xdoc.SelectSingleNode("result/books/book[@isbn='" + isbn + "']/system[@systemid='" + selectedSystemId + "']/status");
+                XmlNode libkeys = null;
+                List<string> calil_library_links = new List<string>();
+                HTMLDivElement linkDivOuter = (HTMLDivElement)document.createElement("div");
+                HTMLDivElement linkDiv = (HTMLDivElement)document.createElement("div");
+                linkDiv.className = "libron_link_div";
+                linkDiv.style.cssText = "padding:7px;border:1px solid #cbc6bd;background:#e8e4db;-moz-border-radius:5px;-webkit-border-radius:5px;font-size:12px;";
+                string tweet_body = null;
+                string twitter_link_inner = null;
+                string libreq_link = "";
 
-            if (apibookstatus != null && apibookstatus.InnerText == "Error")
-            {
-                HTMLDivElement error_link = (HTMLDivElement)document.createElement("div");
-                error_link.innerHTML = "<span>エラーが発生しました <image src='" + ngIcon + "'></span>";
-                linkDiv.appendChild((IHTMLDOMNode)error_link);
-            }
-            else
-            {
-                XmlNode reserveurl = null;
-                reserveurl = xdoc.SelectSingleNode("result/books/book[@isbn='" + isbn + "']/system[@systemid='" + selectedSystemId + "']/reserveurl");
-                libkeys = xdoc.SelectSingleNode("result/books/book[@isbn='" + isbn + "']/system[@systemid='" + selectedSystemId + "']/libkeys");
-                foreach (XmlNode libkey in libkeys.ChildNodes)
+                if (apibookstatus != null && apibookstatus.InnerText == "Error")
                 {
-                    string calil_library_link = "<a href='http://calil.jp/library/search?s=" + selectedSystemId + "&k=" + HttpUtility.UrlEncode(libkey.InnerText) + "' target='_blank'>" + libkey.InnerText + "(" + libkey + ")" + "</a>";
-                    calil_library_links.Add(calil_library_link);
-                }
-                if (calil_library_links.Count > 0)
-                {
-                    HTMLDivElement ok_link = (HTMLDivElement)document.createElement("div");
-                    if (reserveurl != null)
-                    {
-                        ok_link.innerHTML = "<span>&raquo; <a target='_blank' href='" + reserveurl.InnerText + "'>" + selectedSystemName + "で予約する</a> <image style='vertical-align:middle;' src='" + okIcon + "'></span>";
-                    }
-                    else
-                    {
-                        ok_link.innerHTML = "<span style='color:#666666;'>" + selectedSystemName + "に蔵書あり <image style='vertical-align:middle;' src='" + okIcon + "'> " + string.Join("・", calil_library_links.ToArray()) + "</span>";
-                    }
-                    linkDiv.appendChild((IHTMLDOMNode)ok_link);
-                    tweet_body = "「" + title + "」を" + selectedSystemName + "の図書館" + "で予約しました。 http://libron.net";
-                    twitter_link_inner = "「予約したよ」とつぶやく";
+                    HTMLDivElement error_link = (HTMLDivElement)document.createElement("div");
+                    error_link.innerHTML = "<span>エラーが発生しました <image src='" + ngIcon + "'></span>";
+                    linkDiv.appendChild((IHTMLDOMNode)error_link);
                 }
                 else
                 {
-                    HTMLDivElement ng_message = (HTMLDivElement)document.createElement("div");
-                    ng_message.innerHTML = "<span style='color:#666666;'>" + selectedSystemName + "には見つかりません <image style='vertical-align:middle;' src='" + ngIcon + "'></span>";
-                    linkDiv.appendChild((IHTMLDOMNode)ng_message);
-                    tweet_body = "@libreq " + isbn + " " + selectedSystemName + " 「" + title + "」を図書館にリクエスト。 http://libreq.net";
-                    libreq_link = " <a href='http://libreq.net/top/about' target='_blank'>[これは何?]</a>";
-                    twitter_link_inner = "リクエストをつぶやく(借りられるようになったら通知を受け取れます)";
+                    XmlNode reserveurl = null;
+                    reserveurl = xdoc.SelectSingleNode("result/books/book[@isbn='" + isbn + "']/system[@systemid='" + selectedSystemId + "']/reserveurl");
+                    libkeys = xdoc.SelectSingleNode("result/books/book[@isbn='" + isbn + "']/system[@systemid='" + selectedSystemId + "']/libkeys");
+                    foreach (XmlNode libkey in libkeys.ChildNodes)
+                    {
+                        string calil_library_link = "<a href='http://calil.jp/library/search?s=" + selectedSystemId + "&k=" + HttpUtility.UrlEncode(libkey.InnerText) + "' target='_blank'>" + libkey.InnerText + "(" + libkey + ")" + "</a>";
+                        calil_library_links.Add(calil_library_link);
+                    }
+                    if (calil_library_links.Count > 0)
+                    {
+                        HTMLDivElement ok_link = (HTMLDivElement)document.createElement("div");
+                        if (reserveurl != null)
+                        {
+                            ok_link.innerHTML = "<span>&raquo; <a target='_blank' href='" + reserveurl.InnerText + "'>" + selectedSystemName + "で予約する</a> <image style='vertical-align:middle;' src='" + okIcon + "'></span>";
+                        }
+                        else
+                        {
+                            ok_link.innerHTML = "<span style='color:#666666;'>" + selectedSystemName + "に蔵書あり <image style='vertical-align:middle;' src='" + okIcon + "'> " + string.Join("・", calil_library_links.ToArray()) + "</span>";
+                        }
+                        linkDiv.appendChild((IHTMLDOMNode)ok_link);
+                        tweet_body = "「" + title + "」を" + selectedSystemName + "の図書館" + "で予約しました。 http://libron.net";
+                        twitter_link_inner = "「予約したよ」とつぶやく";
+                    }
+                    else
+                    {
+                        HTMLDivElement ng_message = (HTMLDivElement)document.createElement("div");
+                        ng_message.innerHTML = "<span style='color:#666666;'>" + selectedSystemName + "には見つかりません <image style='vertical-align:middle;' src='" + ngIcon + "'></span>";
+                        linkDiv.appendChild((IHTMLDOMNode)ng_message);
+                        tweet_body = "@libreq " + isbn + " " + selectedSystemName + " 「" + title + "」を図書館にリクエスト。 http://libreq.net";
+                        libreq_link = " <a href='http://libreq.net/top/about' target='_blank'>[これは何?]</a>";
+                        twitter_link_inner = "リクエストをつぶやく(借りられるようになったら通知を受け取れます)";
+                    }
                 }
+
+                HTMLDivElement calil_link = (HTMLDivElement)document.createElement("div");
+                calil_link.style.marginTop = "3px";
+                string calil_url = "http://calil.jp/book/" + isbn;
+                calil_link.innerHTML = "<span>&raquo; <a target='_blank' href='" + calil_url + "'>他の図書館で検索する(カーリル)</a> <image style='vertical-align:middle;' src='" + calilIcon + "'> </span>";
+                linkDiv.appendChild((IHTMLDOMNode)calil_link);
+
+                if (tweet_body != null)
+                {
+                    HTMLDivElement twitter_link = (HTMLDivElement)document.createElement("div");
+                    twitter_link.style.marginTop = "3px";
+
+                    string twitter_url = "http://twitter.com/home?status=" + HttpUtility.UrlEncode(tweet_body);
+                    twitter_link.innerHTML = "<span>&raquo; <a target='_blank' href='" + twitter_url + "'>" + twitter_link_inner + "</a>" + libreq_link + " <image style='vertical-align:middle;' src='" + twitterIcon + "'> </span>";
+                    linkDiv.appendChild((IHTMLDOMNode)twitter_link);
+                }
+
+                linkDivOuter.appendChild((IHTMLDOMNode)linkDiv);
+                div.appendChild((IHTMLDOMNode)linkDivOuter);
             }
-
-            HTMLDivElement calil_link = (HTMLDivElement)document.createElement("div");
-            calil_link.style.marginTop = "3px";
-            string calil_url = "http://calil.jp/book/" + isbn;
-            calil_link.innerHTML = "<span>&raquo; <a target='_blank' href='" + calil_url + "'>他の図書館で検索する(カーリル)</a> <image style='vertical-align:middle;' src='" + calilIcon + "'> </span>";
-            linkDiv.appendChild((IHTMLDOMNode)calil_link);
-
-            if (tweet_body != null)
-            {
-                HTMLDivElement twitter_link = (HTMLDivElement)document.createElement("div");
-                twitter_link.style.marginTop = "3px";
-
-                string twitter_url = "http://twitter.com/home?status=" + HttpUtility.UrlEncode(tweet_body);
-                twitter_link.innerHTML = "<span>&raquo; <a target='_blank' href='" + twitter_url + "'>" + twitter_link_inner + "</a>" + libreq_link + " <image style='vertical-align:middle;' src='" + twitterIcon + "'> </span>";
-                linkDiv.appendChild((IHTMLDOMNode)twitter_link);
-            }
-
-            linkDivOuter.appendChild((IHTMLDOMNode)linkDiv);
-            div.appendChild((IHTMLDOMNode)linkDivOuter);
+            catch { }
         }
 
         string truncate(string str)

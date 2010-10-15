@@ -319,7 +319,7 @@ namespace LibronToolbar
                     //lblError.Visible = true;
                     //tmrError.Start();
                 }
-                lblDescription.Text = "[" + libron.selectedPrefecture + "]" + libron.selectedSystemName + "Ç≈åüçı ";
+                lblDescription.Text = "[" + libron.selectedPrefecture + "] " + libron.selectedSystemName + "Ç≈åüçı ";
                 lblDescription.Visible = true;
                 libron.DownloadedLibrayNames += new LibronClass.DownloadedLibraryNamesEventHandler(libron_DownloadedLibrayNames);
                 libron.DownloadLibraryNames();
@@ -445,7 +445,7 @@ namespace LibronToolbar
             cmbPrefectures.Visible = false;
             cmbLibraries.Visible = false;
             btnSave.Visible = false;
-            lblDescription.Text = "[" + libron.selectedPrefecture + "]" + libron.selectedSystemName + "Ç≈åüçı ";
+            lblDescription.Text = "[" + libron.selectedPrefecture + "] " + libron.selectedSystemName + "Ç≈åüçı ";
             lblDescription.Visible = true;
             ((HTMLDocument)this.Explorer.Document).parentWindow.location.reload(true);
 

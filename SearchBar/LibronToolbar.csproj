@@ -76,7 +76,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
@@ -93,9 +93,10 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Interop.SHDocVw">
-      <Name>Interop.SHDocVw</Name>
-      <HintPath>..\..\lib\Interop.SHDocVw.dll</HintPath>
+    <Reference Include="Interop.SHDocVw, Version=1.1.0.0, Culture=neutral, PublicKeyToken=4b827ebe229d539f">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>bin\Debug\Interop.SHDocVw.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Name>System</Name>
@@ -172,12 +173,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BandObjectLib\BandObjectLib.csproj">
-      <Project>{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}</Project>
-      <Name>BandObjectLib</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <COMReference Include="MSHTML">
       <Guid>{3050F1C5-98B5-11CF-BB82-00AA00BDCE0B}</Guid>
       <VersionMajor>4</VersionMajor>
@@ -203,6 +198,12 @@
       <ProductName>Windows インストーラー 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BandObjectLib\BandObjectLib.csproj">
+      <Project>{BDB3B670-A17B-483E-954C-52FC2B6FF9D3}</Project>
+      <Name>BandObjectLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
